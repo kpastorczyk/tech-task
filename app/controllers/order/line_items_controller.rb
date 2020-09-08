@@ -4,7 +4,7 @@ class Order::LineItemsController < ApplicationController
 
   # GET /order/line_items
   def index
-    @order_line_items = Order::LineItem.all
+    @order_line_items = @order.line_items
 
     render json: @order_line_items
   end
@@ -16,8 +16,7 @@ class Order::LineItemsController < ApplicationController
 
   # POST /order/line_items
   def create
-    @order_line_item = Order::LineItem.new(order_line_item_params.merge!(order_id: @order.id))
-    # @order_line_item.order_id = @order.id
+    @order_line_item = Order::LineItem.new(order_line_item_params)
 
     if @order_line_item.save
       render json: @order_line_item, status: :created
@@ -50,6 +49,6 @@ class Order::LineItemsController < ApplicationController
   end
 
   def order_line_item_params
-    params.require(:order_line_item).permit( :name, :price)
+    params.require(:order_line_item).permit( :name, :price).merge!(order_id: @order.id)
   end
 end
