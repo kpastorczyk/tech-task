@@ -1,11 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe "/order/line_items", type: :request do
-  # This should return the minimal set of attributes required to create a valid
-  # Order::LineItem. As you add validations to Order::LineItem, be sure to
-  # adjust the attributes here as well.
+  let!(:order) { create(:order) }
   let(:valid_attributes) {
-    attributes_for(:order_line_item)
+    attributes_for(:order_line_item, order_id: order.id)
   }
 
   let(:invalid_attributes) {
@@ -73,15 +71,19 @@ RSpec.describe "/order/line_items", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        {
+          name: Faker::Name.name,
+          price: 50
+        }
       }
 
       it "updates the requested order_line_item" do
         order_line_item = Order::LineItem.create! valid_attributes
         patch order_line_item_url(order_line_item),
-              params: { order_line_item: invalid_attributes }, headers: valid_headers, as: :json
+              params: { order_line_item: new_attributes }, headers: valid_headers, as: :json
         order_line_item.reload
-        skip("Add assertions for updated state")
+        expect(order_line_item.name).to eq(new_attributes[:name])
+        expect(order_line_item.price).to eq(new_attributes[:price])
       end
 
       it "renders a JSON response with the order_line_item" do

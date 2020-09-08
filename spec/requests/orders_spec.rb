@@ -14,10 +14,12 @@ RSpec.describe "/orders", type: :request do
   }
 
   describe "GET /index" do
+    let!(:order) { create(:order, :with_line_item) }
     it "renders a successful response" do
-      Order.create! valid_attributes
       get orders_url, headers: valid_headers, as: :json
       expect(response).to be_successful
+      expect(JSON.parse(response.body).first["line_items"].count).to eq(1)
+      expect(JSON.parse(response.body).first["value"]).to eq(1)
     end
   end
 
