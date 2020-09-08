@@ -1,5 +1,6 @@
 class Order::LineItemsController < ApplicationController
   before_action :set_order_line_item, only: [:show, :update, :destroy]
+  before_action :set_order
 
   # GET /order/line_items
   def index
@@ -15,10 +16,11 @@ class Order::LineItemsController < ApplicationController
 
   # POST /order/line_items
   def create
-    @order_line_item = Order::LineItem.new(order_line_item_params)
+    @order_line_item = Order::LineItem.new(order_line_item_params.merge!(order_id: @order.id))
+    # @order_line_item.order_id = @order.id
 
     if @order_line_item.save
-      render json: @order_line_item, status: :created, location: @order_line_item
+      render json: @order_line_item, status: :created
     else
       render json: @order_line_item.errors, status: :unprocessable_entity
     end
@@ -39,13 +41,15 @@ class Order::LineItemsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_order_line_item
-      @order_line_item = Order::LineItem.find(params[:id])
-    end
+  def set_order_line_item
+    @order_line_item = Order::LineItem.find(params[:id])
+  end
 
-    # Only allow a trusted parameter "white list" through.
-    def order_line_item_params
-      params.require(:order_line_item).permit(:order_id, :name, :price)
-    end
+  def set_order
+    @order = Order.find(params[:order_id])
+  end
+
+  def order_line_item_params
+    params.require(:order_line_item).permit( :name, :price)
+  end
 end

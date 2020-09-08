@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
-  namespace :order do
-    resources :line_items
+  resources :orders do
+    resources :line_items, controller: 'order/line_items'
   end
-  resources :orders
 end
